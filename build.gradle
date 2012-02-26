@@ -1,0 +1,23 @@
+apply plugin: 'java'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testCompile ('org.easyb:easyb:0.9.8') 
+}
+
+test.doLast {
+ 
+    ant.taskdef(name: "easyb", classname:"org.easyb.ant.BehaviorRunnerTask", classpath: sourceSets.test.runtimeClasspath.asPath)
+ 
+    ant.easyb( classpath: sourceSets.test.runtimeClasspath.asPath, failureProperty:'easyb_failed' ) {
+        report( location:"${project.testResultsDir}/story.html", format:"html" )
+        behaviors( dir: "stories" ) {
+            include( name:"**/*.story" )
+        }
+   }
+ 
+    ant.fail( if:'easyb_failed', message: 'Failures in easyb stories' )
+}
